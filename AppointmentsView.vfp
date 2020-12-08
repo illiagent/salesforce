@@ -1,0 +1,86 @@
+<apex:page Controller="AppointmentsViewController" showHeader="false" sidebar="false">
+   <apex:form id="Form" >
+      <apex:pageBlock title="Appointments Table" >
+         <apex:pageBlockSection columns="1" >
+            <apex:pageBlockSectionItem >
+               <apex:actionFunction action="{!getWorkingHours}"
+                  name="selectDoctor"
+                  rerender="HoursTable"/>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem id="fff">
+               <apex:commandlink style="text-decoration:none" action="{!URLFOR($Action.Doctor__c.New)}" target="_blank"  >
+                  <apex:commandButton value="Add New Doctor" />
+               </apex:commandlink>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+               Select a doctor: 
+               <apex:selectList size="1" value="{!doctorId}" onchange="selectDoctor();">
+                  <apex:selectOptions value="{!doctorSelectOptionList}"/>
+               </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSection id="HoursTable">
+               <apex:pageBlockSectionItem >
+                  Working Hours Start: {!HOUR(doctorWorkingHours.Working_Hours_Start__c)}:{!MINUTE(doctorWorkingHours.Working_Hours_Start__c)} {! IF (HOUR(doctorWorkingHours.Working_Hours_Start__c) < 12, " AM", " PM")}  <br/>
+                  Working Hours End : {!HOUR(doctorWorkingHours.Working_Hours_End__c)}:{!Minute(doctorWorkingHours.Working_Hours_End__c)}  {! IF (HOUR(doctorWorkingHours.Working_Hours_End__c) < 12, " AM", " PM")}
+               </apex:pageBlockSectionItem>
+               <br/>
+               <apex:pageBlockSectionItem >
+               </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+            <apex:pageBlockSectionItem >
+               Select a patient: 
+               <apex:selectList size="1" value="{!patientId}"   >
+                  <apex:selectOptions value="{!patientSelectOptionList}"/>
+               </apex:selectList>
+            </apex:pageBlockSectionItem>
+            <apex:pageBlockSectionItem >
+               <apex:commandlink style="text-decoration:none" action="{!URLFOR($Action.Patient__c.New)}" target="_blank"  >
+                  <apex:commandButton value="Add New Patient" />
+               </apex:commandlink>
+            </apex:pageBlockSectionItem>
+            <apex:inputField value="{!appointmentToRecord.Appointment_Date__c}" label="Appointment date" required="false"/>
+            <apex:inputField value="{!appointmentToRecord.Duration_in_minutes__c}" label="Duration in minutes" required="false"/>
+            <apex:pageBlockSectionItem >
+               <apex:commandButton action="{!createNewAppointment}" value="Add New Appointment" reRender="pbId" oncomplete="location.reload()" />
+            </apex:pageBlockSectionItem>
+         </apex:pageBlockSection>
+      </apex:pageBlock>
+   </apex:form>
+   <apex:form >
+      <apex:outputPanel layout="block" id="AppointmentsTableBox">
+         <apex:pageBlock >
+            <apex:pageBlockTable value="{!appointmentsList}" var="item" rows="50" >
+               <apex:column headerValue="Action" >
+                  <apex:outputLink value="/{!item.id}" target="_blank">
+                     <apex:outputText value="View"/>
+                  </apex:outputLink>
+               </apex:column>
+               <apex:column headerValue="Doctor's Name">
+                  <apex:outputField value="{!item.Doctor__c}"/>
+               </apex:column>
+               <apex:column headerValue="Patient's Name" >
+                  <apex:outputField value="{!item.Patient__c}"/>
+               </apex:column>
+               <apex:column headerValue="Date">
+                  <apex:outputField value="{!item.Appointment_Date__c}"/>
+               </apex:column>
+               <apex:column headerValue="Duration" >
+                  <apex:outputField value="{!item.Duration_in_minutes__c}"/>
+                  {!IF (item.Duration_in_minutes__c == null,  " ", " minutes")}
+               </apex:column>
+            </apex:pageBlockTable>
+         </apex:pageBlock>
+         <apex:panelGrid columns="7">
+            <apex:commandButton action="{!setCon.first}" status="PaginationStatus" reRender="AppointmentsTableBox" value="<<" disabled="{!!setCon.hasPrevious}" title="First Page"/>
+            <apex:commandButton action="{!setCon.previous}" status="PaginationStatus" reRender="AppointmentsTableBox" value="prev" disabled="{!!setCon.hasPrevious}" title="Previous Page"/>
+            <apex:outputText >{!(setCon.pageNumber * size)+1-size}-{!IF((setCon.pageNumber * size)>noOfRecords, noOfRecords,(setCon.pageNumber * size))} of {!noOfRecords}</apex:outputText>
+            <apex:commandButton action="{!setCon.next}" status="PaginationStatus" reRender="AppointmentsTableBox" value="next" disabled="{!!setCon.hasNext}" title="Next Page"/>
+            <apex:commandButton action="{!setCon.last}" status="PaginationStatus" reRender="AppointmentsTableBox" value=">>" disabled="{!!setCon.hasNext}" title="Last Page"/>
+            <apex:actionStatus id="PaginationStatus">
+               <apex:facet name="start"><img src="/img/loading.gif" alt="" /></apex:facet>
+               <apex:facet name="stop"></apex:facet>
+            </apex:actionStatus>
+         </apex:panelGrid>
+      </apex:outputPanel>
+   </apex:form>
+</apex:page>

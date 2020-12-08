@@ -1,0 +1,80 @@
+public with sharing  class AppointmentsViewController {
+    public Integer size{get;set;} 
+    public Integer noOfRecords{get; set;} 
+    public List<Appointment__c> appointmentsList { get{return (List<Appointment__c>)setCon.getRecords();} set; }
+    public List<Doctor__c > doctorList {get;set;}
+    public List<SelectOption> doctorSelectOptionList{get;set;}
+    public List<Patient__c > patientList {get;set;}
+    public List<SelectOption> patientSelectOptionList{get;set;}
+   	
+    public Doctor__c doctorWorkingHours {get;set;}      
+    public Appointment__c appointment { get; set; }
+  
+    public Appointment__c appointmentToRecord { get; set; }
+    public String doctorId {get;set;}
+    public String patientId {get;set;}
+    public Datetime appDate {get; set;}
+    public Integer duration {get; set;}
+ 
+public ApexPages.StandardSetController setCon { get {
+	if (setCon == null) {
+ 	size = 10;
+ 	string queryString = 'SELECT Id, Name, Doctor__c, Patient__c, Appointment_Date__c, Duration_in_minutes__c FROM Appointment__c ORDER BY Name DESC';
+ 	setCon = new ApexPages.StandardSetController(Database.getQueryLocator(queryString));
+ 	setCon.setPageSize(size);
+ 	noOfRecords = setCon.getResultSize();
+ 	}
+ 		return setCon;
+ 	}
+ 	set;
+ }
+
+ public AppointmentsViewController() {
+
+ 	this.appointmentToRecord = new Appointment__c();
+ 	this.doctorId = '';
+ 	this.patientId = '';
+ 	this.appDate = System.now();
+ 	this.duration = 0;
+
+ 	appointmentsList = [SELECT Id, Name, Doctor__c, Patient__c, Appointment_Date__c, Duration_in_minutes__c
+ 		FROM Appointment__c
+ 	];
+     
+ 	doctorList = [SELECT Id, Name FROM Doctor__c ORDER BY Name ASC];
+ 	doctorId = doctorList.isEmpty() == FALSE ? doctorList[0].Id : NULL;
+ 	doctorSelectOptionList = new List<SelectOption> ();
+ 	for (Doctor__c item: doctorList) {
+ 		doctorSelectOptionList.add(new SelectOption(item.Id, item.Name));
+ 	}
+
+ 	patientList = [SELECT Id, Name FROM Patient__c ORDER BY Name ASC];
+ 	patientId = patientList.isEmpty() == FALSE ? doctorList[0].Id : NULL;
+ 	patientSelectOptionList = new List<SelectOption> ();
+ 	for (Patient__c item: patientList) {
+ 		patientSelectOptionList.add(new SelectOption(item.Id, item.Name));
+ 	}
+ 	getWorkingHours();
+ }
+
+ public PageReference createNewAppointment() {
+
+ 	this.appointmentToRecord.Doctor__c = doctorId;
+ 	this.appointmentToRecord.Patient__c = patientId;
+ 	this.appointmentToRecord.Appointment_Date__c = Datetime.valueOf(appointmentToRecord.Appointment_Date__c);
+ 	this.appointmentToRecord.Duration_in_minutes__c = Integer.valueOf(appointmentToRecord.Duration_in_minutes__c);
+ 	insert this.appointmentToRecord;
+ 	return NULL;
+
+ }
+
+ public void getWorkingHours() {
+
+ 	doctorWorkingHours = [SELECT Working_Hours_End__c, Working_Hours_Start__c
+ 		FROM Doctor__c
+ 		WHERE Doctor__c.Id =: doctorId
+ 	];
+
+ }
+ }   
+   
