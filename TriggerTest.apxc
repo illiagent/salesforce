@@ -1,0 +1,14 @@
+@isTest
+private class TriggerTest {
+
+    @isTest static void AppointmentsWorkHoursTest () {
+        
+        Appointment__c appointment = new Appointment__c(
+        Appointment_Date__c = Date.today().addDays(-4),
+        
+        Duration_in_minutes__c	= 45
+       
+        );
+		insert appointment ;
+    }	
+}

@@ -1,0 +1,14 @@
+@isTest 
+public class AppointmentsViewControllerTest {
+    
+    @isTest static void AppointmentsViewControllerTest1 () {
+    
+        Patient__c patientList = new Patient__c(
+          First_Name_del__c	= 'Alex',
+          Last_Name_del__c	= 'Clare'
+        );
+        insert patientList;
+    
+        AppointmentsViewController controller = new AppointmentsViewController();
+    }
+}
