@@ -1,9 +1,7 @@
 public with sharing  class AppointmentsViewController {
-   	public Integer size{get;set;} 
+    public Integer size{get;set;} 
     public Integer noOfRecords{get; set;} 
-   	public List<Appointment__c> appointmentsList { get{
-			return (List<Appointment__c>)setCon.getRecords();
-												} set; }
+    public List<Appointment__c> appointmentsList { get{return (List<Appointment__c>)setCon.getRecords();} set; }
     public List<Doctor__c > doctorList {get;set;}
     public List<SelectOption> doctorSelectOptionList{get;set;}
     public List<Patient__c > patientList {get;set;}
@@ -18,15 +16,14 @@ public with sharing  class AppointmentsViewController {
     public Datetime appDate {get; set;}
     public Integer duration {get; set;}
  
-public ApexPages.StandardSetController setCon {
- 	get {
- 		if (setCon == null) {
- 			size = 10;
- 			string queryString = 'SELECT Id, Name, Doctor__c, Patient__c, Appointment_Date__c, Duration_in_minutes__c FROM Appointment__c ORDER BY Name DESC';
- 			setCon = new ApexPages.StandardSetController(Database.getQueryLocator(queryString));
- 			setCon.setPageSize(size);
- 			noOfRecords = setCon.getResultSize();
- 		}
+public ApexPages.StandardSetController setCon { get {
+	if (setCon == null) {
+ 	size = 10;
+ 	string queryString = 'SELECT Id, Name, Doctor__c, Patient__c, Appointment_Date__c, Duration_in_minutes__c FROM Appointment__c ORDER BY Name DESC';
+ 	setCon = new ApexPages.StandardSetController(Database.getQueryLocator(queryString));
+ 	setCon.setPageSize(size);
+ 	noOfRecords = setCon.getResultSize();
+ 	}
  		return setCon;
  	}
  	set;
